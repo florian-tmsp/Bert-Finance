@@ -1,0 +1,60 @@
+﻿Carnapete Laura
+Goupil Florian
+
+adresse<-"http://lab.chcariou.fr/econometrie/examun_2018_1.csv"
+tableau<-read.table(adresse, sep=";", header=TRUE)
+View(tableau)
+tableau_sansintouchables <-tableau[-756,]
+tableausansvaleurextrm <-tableau_sansintouchables[-1562,]
+tableausanstitrespourmatrice <-tableau[,-1]
+View(tableausanstitrespourmatrice)
+
+#analyse descriptive 
+
+install.packages("stargazer")
+library(stargazer)
+summary(tableau)
+hist(tableausansvaleurextrm$entrees, breaks=200)
+hist(tableau$salles)
+hist(tableau$media)
+
+
+
+install.packages("Hmisc")
+library(Hmisc)
+
+
+
+#correlation linéaire
+rcorr(as.matrix(tableausanstitrespourmatrice))
+cor(tableau$entrees,tableau$salles)
+cor(tableau$salles,tableau$media)
+cor(tableau$salles,tableau$allocine)
+cor(tableau$salles,tableau$cas_01)
+cor(tableau$media,tableau$allocine)
+hist(tableau$entrees)
+
+
+plot(tableau$entrees, tableau$salles, pch=19, col=alpha("black",0.25),cex=0.75, main="cor entrees / salles")
+plot(tableau$media, tableau$entrees, pch=19, col=alpha("black",0.25),cex=0.75, main="cor entrees / media")
+plot(tableau$entrees, tableau$cas_02, pch=19, col=alpha("black",0.25),cex=0.75, main="cor entrees / cas_02")
+plot(tableau$entrees, tableau$allocine, pch=19, col=alpha("black",0.25),cex=0.75, main="cor entrees / allociné")
+plot(tableau$entrees, tableau$cas_01, pch=19, col=alpha("black",0.25),cex=0.75, main="cor entrees / cas_01")
+plot(tableau$salles, tableau$allocine, pch=19, col=alpha("black",0.25),cex=0.75, main="cor salles / allocine")
+plot(tableau$salles, tableau$media, pch=19, col=alpha("black",0.25),cex=0.75, main="cor salles / media")
+plot(tableau$allocine, tableau$media, pch=19, col=alpha("black",0.25),cex=0.75, main="cor allocine / media")
+
+
+# Regression
+
+
+regressioncbase <- lm(log(entrees)~log(salles)+media+allocine+cas_01+cas_02, data=tableau) # salles media allocine cas01 cas02
+summary(regressioncbase)
+
+
+# Tests d'hypothèse
+install.packages("AER")
+library(AER)
+vif(regressioncbase) # multicolinéarité : cool si <2
+ncvTest(regressioncbase) # homoscedasticité : cool si pvalue >.05
+shapiro.test(regressioncbase$res) # normalité : cool si pvalue >.05
