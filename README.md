@@ -1,2 +1,2 @@
-# Analyse sentimentale sur articles financière
+# Analyse sentimentale sur articles financiers
  Modèle BERT adapté sur données financières/ 
